@@ -3,6 +3,7 @@ use bcrypt::hash;
 use jsonwebtoken::{self, EncodingKey, Header, encode};
 use rusqlite::{Connection, params};
 use serde::{Deserialize, Serialize};
+// use serde_json::json;
 use std::{net::SocketAddr, sync::Arc};
 use tokio::sync::Mutex;
 use tower_http::services::ServeDir;
@@ -101,8 +102,40 @@ async fn register(
 }
 
 async fn login(
-    State(_state): State<AppState>,
-    Json(_payload): Json<AuthRequest>,
+    State(state): State<AppState>,
+    Json(payload): Json<AuthRequest>,
 ) -> Result<Json<AuthResponse>, StatusCode> {
-    Err(StatusCode::CONFLICT)
+    let db = state.db.lock().await;
+
+    let user_result = db.query_row(
+        "SELECT id, password FROM users WHERE username = ?",
+        params![&payload.username],
+        |row| {
+            let id: i64 = row.get(0)?;
+            let password: String = row.get(1)?;
+            Ok((id, password))
+        },
+    );
+
+    let (user_id, hashed_password) = match user_result {
+        Ok(user) => user,
+        Err(_) => return Err(StatusCode::NOT_FOUND),
+    };
+
+    let password_valid = bcrypt::verify(&payload.password, &hashed_password)
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    if !password_valid {
+        return Err(StatusCode::UNAUTHORIZED);
+    }
+
+    let claims = serde_json::json!({"id": user_id});
+    let token = encode(
+        &Header::default(),
+        &claims,
+        &EncodingKey::from_secret(state.jwt_secret.as_bytes()),
+    )
+    .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(Json(AuthResponse { token }))
 }
