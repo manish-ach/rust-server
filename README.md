@@ -13,4 +13,4 @@ To run it:
 
 ### Structure
 
-<img width="2188" height="929" alt="image" src="https://github.com/user-attachments/assets/96c3d130-4832-4b44-a9d8-0d492e61fe6c" />
+<img width="2826" height="1468" alt="image" src="https://github.com/user-attachments/assets/68fa6c36-456b-4eec-b5e9-dd30667a2974" />
