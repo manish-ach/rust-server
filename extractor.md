@@ -1,7 +1,3 @@
-Absolutely! Let’s go **step by step** and break down your Rust code for the Axum extractor, so you understand **what it is, why it exists, and how it works**. I’ll also clarify some Rust-specific subtleties.
-
----
-
 ## **1. What is an extractor?**
 
 In Axum, an **extractor** is a type that can pull out information from an HTTP request (headers, query parameters, body, cookies, etc.) so that your handler functions don’t have to manually parse everything.
