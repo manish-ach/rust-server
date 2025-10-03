@@ -10,3 +10,7 @@ To run it:
 - clone the repo
 - `cargo run` at the repo
 - go to `http://127.0.0.1:8001` to view the site
+
+### Structure
+
+<img width="2188" height="929" alt="image" src="https://github.com/user-attachments/assets/96c3d130-4832-4b44-a9d8-0d492e61fe6c" />
